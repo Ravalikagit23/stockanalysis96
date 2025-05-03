@@ -1,0 +1,4 @@
+Name,Symbol,Side,Status,Filled,Total Qty,Price,Avg Price,Time-in-Force,Placed Time
+Snowflake Inc,SNOW,Buy,Filled,20,20,@142.27,142.27,DAY,10/27/2023 10:55:37 EDT,10/27/2023 10:56:50 EDT
+Nvidia Corporation,NVDA,Buy,Filled,2,2,@401.07,401.07,DAY,10/26/2023 13:40:44 EDT,10/26/2023 13:40:44 EDT
+Nvidia Corporation,NVDA,Buy,Filled,3,3,@420.25,420.25,DAY,10/18/2023 18:36:58 EDT,10/18/2023 18:36:58 EDT
