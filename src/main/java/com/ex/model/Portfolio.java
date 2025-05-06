@@ -5,14 +5,18 @@ public class Portfolio {
     private String stockName;
     private String symbol;
     private double qty;
-    private Double price;
+    private Double totalCost;
+
+    private  Double currentPrice;
 
 
-    public Portfolio(String stockName, String symbol, double qty, Double price) {
+
+    public Portfolio(String stockName, String symbol, double qty, Double price,Double currentPrice) {
         this.stockName = stockName;
         this.symbol = symbol;
         this.qty = qty;
-        this.price = price;
+        this.totalCost = price;
+        this.currentPrice=currentPrice;
     }
 
 
@@ -41,15 +45,24 @@ public class Portfolio {
         this.qty = qty;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getTotalCost() {
+
+        return totalCost;
+    }
+    public Double getCurrentPrice() {
+
+        return currentPrice;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setTotalCost(Double totalCost) {
+
+        this.totalCost = totalCost;
     }
 
+    public void setCurrentPrice(Double  currentPrice) {
 
+        this.currentPrice = currentPrice;
+    }
 
 
 public Portfolio(){
