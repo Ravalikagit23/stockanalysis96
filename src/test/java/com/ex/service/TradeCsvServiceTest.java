@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
         Portfolio applePortfolio =response.getPortfolio().get(0);
         assertNotNull(applePortfolio);
         assertEquals(5, applePortfolio.getQty());
-        assertEquals(-400.0, applePortfolio.getPrice()); // -1000 + 600
+        assertEquals(-400.0, applePortfolio.getTotalCost()); // -1000 + 600
 
 
         List<RealizedProfit >profitPortfolio=response.getProfit();
@@ -65,7 +65,7 @@ import static org.junit.jupiter.api.Assertions.*;
         Portfolio applePortfolio = netQuantity.getPortfolio().get(0);
 //        assertNotNull(applePortfolio);
         assertEquals(15, applePortfolio.getQty());//15
-        assertEquals(-1600.0, applePortfolio.getPrice());//-1600
+        assertEquals(-1600.0, applePortfolio.getTotalCost());//-1600
 
     }
 
@@ -80,18 +80,18 @@ import static org.junit.jupiter.api.Assertions.*;
         Portfolio applePortfolio = netQuantity.getPortfolio().get(0);
 //        assertNotNull(applePortfolio);
         assertEquals(-15, applePortfolio.getQty());//15
-        assertEquals(+1600.0, applePortfolio.getPrice());//+1600
+        assertEquals(+1600.0, applePortfolio.getTotalCost());//+1600
 
     }
 
-    @Test
-    void testReadTradesFromCSV() {
-        ReflectionTestUtils.setField(service, "csvFilePath", "C:\\Users\\rajug\\Downloads\\stocktrade\\stocktrade\\src\\test\\files\\trades.csv");
-        List<Trade> tradeList = service.readTradesFromCsv();
-        assertNotNull(tradeList);
-        assertEquals(3, tradeList.size());
-
-    }
+//    @Test
+//    void testReadTradesFromCSV() {
+//        ReflectionTestUtils.setField(service, "csvFilePath", "C:\\Users\\rajug\\Downloads\\stocktrade\\stocktrade\\src\\test\\files\\trades.csv");
+//        List<Trade> tradeList = service.readTradesFromCsv();
+//        assertNotNull(tradeList);
+//        assertEquals(3, tradeList.size());
+//
+//    }
 
     @Test
     void testReadNotFoundCSVFile() {

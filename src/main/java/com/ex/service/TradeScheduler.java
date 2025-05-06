@@ -70,7 +70,7 @@ public class TradeScheduler {
             newPortfolio.setStockName(portfolio1.getStockName());
             newPortfolio.setSymbol(portfolio1.getSymbol());
             newPortfolio.setQty(portfolio1.getQty());
-            newPortfolio.setPrice(portfolio1.getPrice());
+            newPortfolio.setPrice(portfolio1.getTotalCost());
             listOfPortfolio.add(newPortfolio);
         }
 
@@ -98,4 +98,5 @@ public class TradeScheduler {
         }
         return  listOfTrade;
     }
+
 }

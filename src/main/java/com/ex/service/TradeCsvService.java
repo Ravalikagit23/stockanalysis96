@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,11 +17,27 @@ import java.util.Map;
 public class TradeCsvService {
 
     @Value("${csv.file.path}")
-    private String csvFilePath;
+    private String TradingFolder;
 
     public List<Trade> readTradesFromCsv() {
         List<Trade> trades = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath))) {
+        File folder = new File(TradingFolder);
+        File[] csvFiles = folder.listFiles();
+
+        if (csvFiles == null || csvFiles.length == 0) {
+            System.out.println("No CSV files found in folder: "+ TradingFolder);
+        }
+
+        for (File csvFile : csvFiles) {
+            System.out.println("Reading file: " + csvFile.getName());
+
+            readCsvFile(trades,csvFile);
+        }
+        return trades;
+    }
+
+    private List<Trade> readCsvFile(List<Trade> trades, File csvFile) {
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
             List<String> lines = new ArrayList<>();
             String line; //csvfile row
 //            skip the Header br.lreadline ();
@@ -40,26 +57,30 @@ public class TradeCsvService {
                     continue;
                 }
 
-                Trade trade = new Trade();
-                trade.setName(parts[0]);
-                trade.setSymbol(parts[1]);
-                trade.setSide(parts[2]);
-                trade.setStatus(parts[3]);
-                trade.setFilled(Double.parseDouble(parts[4]));
-                trade.setTotalQty(Double.parseDouble(parts[5]));
-                trade.setPrice(Double.parseDouble(parts[6].replace("@", "")));
-                trade.setAvgPrice(Double.parseDouble(parts[7]));
-                trade.setTimeInForce(parts[8]);
-                trade.setPlacedTime(parts[9]);
-                trade.setFilledTime(parts[10]);
-
-                trades.add(trade);
+                getTradeFromCsvFile(trades, parts);
             }
         } catch (IOException ex) {
             throw new RuntimeException("Error reading CSV file", ex);
         }
 
         return trades;
+    }
+
+    private static void getTradeFromCsvFile(List<Trade> trades, String[] parts) {
+        Trade trade = new Trade();
+        trade.setName(parts[0]);
+        trade.setSymbol(parts[1]);
+        trade.setSide(parts[2]);
+        trade.setStatus(parts[3]);
+        trade.setFilled(Double.parseDouble(parts[4]));
+        trade.setTotalQty(Double.parseDouble(parts[5]));
+        trade.setPrice(Double.parseDouble(parts[6].replace("@", "")));
+        trade.setAvgPrice(Double.parseDouble(parts[7]));
+        trade.setTimeInForce(parts[8]);
+        trade.setPlacedTime(parts[9]);
+        trade.setFilledTime(parts[10]);
+
+        trades.add(trade);
     }
 
     public PortfolioResponse calculateNetQuantityOfStocks(List<Trade> trades) {
@@ -71,33 +92,33 @@ public class TradeCsvService {
             Double price = trade.getPrice();//140
             double newPurchasedQuantity = trade.getTotalQty();//10
             //AAPL- (10, 1200)
-            //AMZN- (5, 2000)
+            //AMZN- (5, 2
 
-            Portfolio existingPortfolioValue = portfolioMap.getOrDefault(stockSymbol, new Portfolio(trade.getName(), trade.getSymbol(), 0, 0.0));
+            Portfolio existingPortfolioValue = portfolioMap.getOrDefault(stockSymbol, new Portfolio(trade.getName(), trade.getSymbol(), 0, 0.0,0.0));
             if ("BUY".equalsIgnoreCase(type)) {
                 existingPortfolioValue.setQty(existingPortfolioValue.getQty() + newPurchasedQuantity);//60 qty
 
 //               newPurchasedQuantity*price
                 double newPrice = newPurchasedQuantity * price;//500
-                existingPortfolioValue.setPrice(existingPortfolioValue.getPrice() - newPrice);
+                existingPortfolioValue.setTotalCost(existingPortfolioValue.getTotalCost() - newPrice);
 
             } else if ("SELL".equalsIgnoreCase(type)) {
                 existingPortfolioValue.setQty(existingPortfolioValue.getQty() - newPurchasedQuantity);//0
 
                 double newPrice = newPurchasedQuantity * price; //140*10=1400
-                existingPortfolioValue.setPrice(existingPortfolioValue.getPrice() + newPrice);
+                existingPortfolioValue.setTotalCost(existingPortfolioValue.getTotalCost() + newPrice);
 
             }
             if (existingPortfolioValue.getQty() == 0) {
 
                 if (realizedProfitMap.containsKey(stockSymbol)) {
                     RealizedProfit exsitingProfit = realizedProfitMap.get(stockSymbol);
-                    double newProfit = exsitingProfit.getProfit() + existingPortfolioValue.getPrice();
+                    double newProfit = exsitingProfit.getProfit() + existingPortfolioValue.getTotalCost();
                     exsitingProfit.setProfit(newProfit);
                     realizedProfitMap.put(stockSymbol, exsitingProfit);
                     portfolioMap.remove(stockSymbol);
                 } else {
-                    RealizedProfit profit = realizedProfitMap.getOrDefault(stockSymbol, new RealizedProfit(trade.getName(), trade.getSymbol(), existingPortfolioValue.getPrice()));
+                    RealizedProfit profit = realizedProfitMap.getOrDefault(stockSymbol, new RealizedProfit(trade.getName(), trade.getSymbol(), existingPortfolioValue.getTotalCost()));
                     realizedProfitMap.put(stockSymbol, profit);
                     portfolioMap.remove(stockSymbol);
                 }
